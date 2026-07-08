@@ -57,11 +57,11 @@ button{
 
 <script>
 
-let inicio=0;
-let intervalo=null;
-let pitido=false;
+let inicio = 0;
+let intervalo = null;
+let pitido = false;
 
-const beep=new Audio("beep.mp3");
+const beep = new Audio("beep.mp3");
 
 function iniciar(){
 
@@ -70,23 +70,24 @@ function iniciar(){
     // Desbloquea el audio en iPhone
     beep.play().then(()=>{
         beep.pause();
-        beep.currentTime=0;
+        beep.currentTime = 0;
     }).catch(()=>{});
 
-    inicio=performance.now();
-    pitido=false;
+    inicio = performance.now();
+    pitido = false;
 
-    intervalo=setInterval(()=>{
+    intervalo = setInterval(()=>{
 
-        const t=(performance.now()-inicio)/1000;
+        const t = (performance.now() - inicio) / 1000;
 
-        document.getElementById("cronometro").textContent=t.toFixed(3);
+        document.getElementById("cronometro").textContent = t.toFixed(3);
 
-        if(!pitido && t>=10.700){
+        // 🔊 El pitido suena a los 10.100 segundos
+        if(!pitido && t >= 10.100){
 
-            pitido=true;
+            pitido = true;
 
-            beep.currentTime=0;
+            beep.currentTime = 0;
             beep.play();
 
         }
@@ -98,11 +99,15 @@ function iniciar(){
 function reiniciar(){
 
     clearInterval(intervalo);
-    intervalo=null;
+    intervalo = null;
 
-    document.getElementById("cronometro").textContent="0.000";
-    document.getElementById("marca").textContent="-";
-    document.getElementById("error").textContent="-";
+    document.getElementById("cronometro").textContent = "0.000";
+    document.getElementById("marca").textContent = "-";
+    document.getElementById("error").textContent = "-";
+
+    pitido = false;
+    beep.pause();
+    beep.currentTime = 0;
 
 }
 
@@ -110,18 +115,19 @@ function marcar(){
 
     if(!intervalo) return;
 
-    const t=(performance.now()-inicio)/1000;
+    const t = (performance.now() - inicio) / 1000;
 
-    document.getElementById("marca").textContent=t.toFixed(3)+" s";
+    document.getElementById("marca").textContent = t.toFixed(3) + " s";
 
-    const diferencia=t-10.700;
+    // La diferencia sigue siendo respecto a 10.700 s
+    const diferencia = t - 10.700;
 
-    if(diferencia>=0){
-        document.getElementById("error").textContent=
-        "+"+diferencia.toFixed(3)+" s";
+    if(diferencia >= 0){
+        document.getElementById("error").textContent =
+            "+" + diferencia.toFixed(3) + " s";
     }else{
-        document.getElementById("error").textContent=
-        diferencia.toFixed(3)+" s";
+        document.getElementById("error").textContent =
+            diferencia.toFixed(3) + " s";
     }
 
 }
