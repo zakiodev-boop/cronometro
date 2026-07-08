@@ -2,37 +2,44 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cronómetro de entrenamiento</title>
 
 <style>
 body{
-    font-family: Arial, sans-serif;
+    margin:0;
     background:#111;
     color:white;
+    font-family:Arial,sans-serif;
     text-align:center;
-    margin-top:60px;
+}
+
+h1{
+    margin-top:40px;
 }
 
 #cronometro{
-    font-size:72px;
+    font-size:70px;
     font-weight:bold;
-    margin:30px;
+    margin:30px 0;
 }
 
 button{
-    font-size:20px;
-    padding:12px 24px;
+    font-size:22px;
+    padding:12px 28px;
     margin:8px;
+    border:none;
+    border-radius:10px;
     cursor:pointer;
 }
 
 #resultado{
     margin-top:25px;
-    font-size:24px;
+    font-size:22px;
 }
 </style>
-</head>
 
+</head>
 <body>
 
 <h1>Cronómetro</h1>
@@ -52,14 +59,19 @@ button{
 
 let inicio=0;
 let intervalo=null;
-let audioCtx=null;
 let pitido=false;
+
+const beep=new Audio("beep.mp3");
 
 function iniciar(){
 
     if(intervalo) return;
 
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Desbloquea el audio en iPhone
+    beep.play().then(()=>{
+        beep.pause();
+        beep.currentTime=0;
+    }).catch(()=>{});
 
     inicio=performance.now();
     pitido=false;
@@ -74,23 +86,9 @@ function iniciar(){
 
             pitido=true;
 
-            const osc=audioCtx.createOscillator();
-            const gain=audioCtx.createGain();
+            beep.currentTime=0;
+            beep.play();
 
-            osc.frequency.value=1000;
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-
-            gain.gain.setValueAtTime(0.2,audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                audioCtx.currentTime+0.25
-            );
-
-            osc.stop(audioCtx.currentTime+0.25);
         }
 
     },10);
@@ -118,7 +116,7 @@ function marcar(){
 
     const diferencia=t-10.700;
 
-    if(diferencia>0){
+    if(diferencia>=0){
         document.getElementById("error").textContent=
         "+"+diferencia.toFixed(3)+" s";
     }else{
